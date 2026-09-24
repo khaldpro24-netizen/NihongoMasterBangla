@@ -1038,8 +1038,8 @@ class MainActivity:ComponentActivity(){
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
-   if(contentType=="語彙") Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
-   if(contentType=="語彙") TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
+   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
+   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
     x.level==level && x.type==contentType && (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en).any{s->s.contains(query,true)}) &&
@@ -1047,7 +1047,7 @@ class MainActivity:ComponentActivity(){
    }
    LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){
     if(contentType=="漢字" && level=="N5"){
-     val ks=n5Kanji.filter{k->query.isBlank() || listOf(k.kanji,k.on,k.kun,k.bn,k.en,k.words).any{it.contains(query,true)}}
+     val ks=n5Kanji.filter{k->val key="N5|漢字|"+k.kanji;(query.isBlank() || listOf(k.kanji,k.on,k.kun,k.bn,k.en,k.words).any{it.contains(query,true)}) && (studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))}
      items(ks,key={it.kanji}){k->
       Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(k.kun.replace("・","、"))}){Text("🔊 発音")}}
