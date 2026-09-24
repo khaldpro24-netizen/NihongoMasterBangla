@@ -1077,7 +1077,7 @@ class MainActivity:ComponentActivity(){
    if(infoPage=="about"){Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){Text("Nihongo Master বাংলা",fontSize=24.sp,fontWeight=FontWeight.Bold);Text("日本語学習アプリ • Japanese Learning App");HorizontalDivider(Modifier.padding(vertical=12.dp));Text("Created by",fontWeight=FontWeight.SemiBold);Text("মোঃ খালিদ হাসান",fontSize=20.sp,fontWeight=FontWeight.Bold);Text("Md Khalid Hasan",fontSize=18.sp);Text("エムディカリドハサン",fontSize=18.sp);Spacer(Modifier.height(10.dp));Text("Developed with the assistance of AI",fontSize=13.sp)}};Spacer(Modifier.height(8.dp))}
    OutlinedTextField(query,{query=it},Modifier.fillMaxWidth(),singleLine=true,label={Text("Search • 検索")},placeholder={Text("日本語 / বাংলা / English")})
    Spacer(Modifier.height(8.dp))
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l},{Text(l)})}}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l;selectedCourseLesson=null;studyFilter="সব"},{Text(l)})}}
    val levelVocab=lessons.filter{it.level==level && it.type=="語彙"}
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
    val lessonVocab=if(level=="N4" && selectedCourseLesson!=null) levelVocab.filter{it.courseLesson==selectedCourseLesson} else levelVocab
