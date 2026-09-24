@@ -1096,9 +1096,10 @@ class MainActivity:ComponentActivity(){
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
    val lessonVocab=if(level=="N4" && selectedCourseLesson!=null) levelVocab.filter{it.courseLesson==selectedCourseLesson} else levelVocab
    val lessonLearned=lessonVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
-   val kanjiLearned=if(level=="N5") n5Kanji.count{learned.contains("N5|漢字|"+it.kanji)} else 0
-   val progressLabel=when{contentType=="漢字" && level=="N5"->"N5 Kanji  $kanjiLearned / ${n5Kanji.size}";level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->"N4 • Lesson $selectedCourseLesson  $lessonLearned / ${lessonVocab.size}";else->"$level Vocabulary  $learnedCount / ${levelVocab.size}"}
-   val progressValue=when{contentType=="漢字" && level=="N5"->if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size;level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->if(lessonVocab.isEmpty())0f else lessonLearned.toFloat()/lessonVocab.size;else->if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
+   val currentKanji=when(level){"N5"->n5Kanji;"N4"->n4Kanji;else->emptyList()}
+   val kanjiLearned=currentKanji.count{learned.contains(level+"|漢字|"+it.kanji)}
+   val progressLabel=when{contentType=="漢字" && currentKanji.isNotEmpty()->"$level Kanji  $kanjiLearned / ${currentKanji.size}";level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->"N4 • Lesson $selectedCourseLesson  $lessonLearned / ${lessonVocab.size}";else->"$level Vocabulary  $learnedCount / ${levelVocab.size}"}
+   val progressValue=when{contentType=="漢字" && currentKanji.isNotEmpty()->if(currentKanji.isEmpty())0f else kanjiLearned.toFloat()/currentKanji.size;level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->if(lessonVocab.isEmpty())0f else lessonLearned.toFloat()/lessonVocab.size;else->if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
    if(level=="N4" && contentType=="語彙"){val completedLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().count{lessonNo->val items=levelVocab.filter{it.courseLesson==lessonNo};items.isNotEmpty() && items.all{learned.contains(it.level+"|"+it.type+"|"+it.base)}};val totalLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().size;Text("Minna no Nihongo • Lesson সম্পূর্ণ $completedLessons/$totalLessons",fontSize=13.sp,color=MaterialTheme.colorScheme.primary)}
@@ -1115,8 +1116,8 @@ class MainActivity:ComponentActivity(){
      }
     }
    }
-   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
-   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) TextButton(onClick={studyFilter="না-পড়া";if(level=="N4" && contentType=="語彙" && selectedCourseLesson==null){selectedCourseLesson=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}}}}){Text(if(level=="N4" && contentType=="語彙") "▶ Continue • পরের অসম্পূর্ণ Lesson" else "▶ Continue • যেখানে শেষ করেছিলেন")}
+   if(contentType=="語彙" || (contentType=="漢字" && currentKanji.isNotEmpty())) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
+   if(contentType=="語彙" || (contentType=="漢字" && currentKanji.isNotEmpty())) TextButton(onClick={studyFilter="না-পড়া";if(level=="N4" && contentType=="語彙" && selectedCourseLesson==null){selectedCourseLesson=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}}}}){Text(if(level=="N4" && contentType=="語彙") "▶ Continue • পরের অসম্পূর্ণ Lesson" else "▶ Continue • যেখানে শেষ করেছিলেন")}
    if(level=="N4" && contentType=="語彙" && selectedCourseLesson!=null && lessonVocab.isNotEmpty() && lessonLearned==lessonVocab.size){val nextIncomplete=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->lessonNo>selectedCourseLesson!! && levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}};if(nextIncomplete!=null) Button(onClick={selectedCourseLesson=nextIncomplete;studyFilter="না-পড়া"}){Text("পরের অসম্পূর্ণ Lesson → $nextIncomplete")} else Text("🎉 N4 Vocabulary-এর সব Lesson সম্পূর্ণ!",fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
@@ -1127,11 +1128,11 @@ class MainActivity:ComponentActivity(){
    if(contentType!="漢字") Text("দেখানো হচ্ছে ${shown.size}টি • ${if(contentType=="語彙") "Vocabulary" else "Grammar"}",Modifier.padding(top=4.dp),fontSize=13.sp,color=MaterialTheme.colorScheme.primary)
    if(shown.isEmpty() && contentType!="漢字") Text(if(query.isNotBlank()) "কোনো ফলাফল পাওয়া যায়নি • 検索結果なし" else if(studyFilter=="না-পড়া") "🎉 এই অংশের সব শব্দ শেখা হয়েছে!" else if(studyFilter=="শিখেছি") "এখনও কোনো শব্দ Learned করা হয়নি।" else "এই অংশে এখনো content নেই।",Modifier.padding(vertical=12.dp),fontSize=15.sp,fontWeight=FontWeight.SemiBold)
    LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){
-    if(contentType=="漢字" && level=="N5"){
+    if(contentType=="漢字" && currentKanji.isNotEmpty()){
      val ks=n5Kanji.filter{k->val key="N5|漢字|"+k.kanji;(query.isBlank() || listOf(k.kanji,k.on,k.kun,k.bn,k.en,k.words).any{it.contains(query,true)}) && (studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))}
      items(ks,key={it.kanji}){k->
       Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
-       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(if(k.exampleRuby.isNotBlank()) k.exampleRuby else if(k.kun!="—") k.kun.replace("・","、") else k.on.replace("・","、"))}){Text("🔊 例文")}}
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • $level • ${k.strokes}画")});TextButton(onClick={speak(if(k.exampleRuby.isNotBlank()) k.exampleRuby else if(k.kun!="—") k.kun.replace("・","、") else k.on.replace("・","、"))}){Text("🔊 例文")}}
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),tonalElevation=2.dp){Text(k.kanji,fontSize=64.sp,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,modifier=Modifier.padding(vertical=18.dp))}
        Spacer(Modifier.height(10.dp))
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
@@ -1146,7 +1147,7 @@ class MainActivity:ComponentActivity(){
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("単語 • Useful Words",fontWeight=FontWeight.Bold);Text(k.words)}}
        Spacer(Modifier.height(8.dp))
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("例文 • Example",fontWeight=FontWeight.Bold);RubyText(k.example,k.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  ${k.exampleBn}");Text("🇬🇧  ${k.exampleEn}")}}
-       val kanjiKey="N5|漢字|"+k.kanji
+       val kanjiKey=level+"|漢字|"+k.kanji
        val kanjiDone=learned.contains(kanjiKey)
        TextButton(onClick={val next=learned.toMutableSet();if(kanjiDone)next.remove(kanjiKey) else next.add(kanjiKey);learnedKeys=next.joinToString("§");prefs.edit().putString("learned_keys",learnedKeys).apply()}){Text(if(kanjiDone)"✓ শিখেছি • Learned" else "○ শিখেছি / Learned")}
       }}
