@@ -1100,7 +1100,7 @@ class MainActivity:ComponentActivity(){
     }
    }
    if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
-   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
+   if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) TextButton(onClick={studyFilter="না-পড়া";if(level=="N4" && contentType=="語彙" && selectedCourseLesson==null){selectedCourseLesson=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}}}}){Text(if(level=="N4" && contentType=="語彙") "▶ Continue • পরের অসম্পূর্ণ Lesson" else "▶ Continue • যেখানে শেষ করেছিলেন")}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
     x.level==level && x.type==contentType && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
