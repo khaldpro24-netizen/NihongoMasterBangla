@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 
-data class Lesson(val level:String,val base:String,val ruby:String,val bn:String,val en:String,val type:String,val example:String="",val exampleRuby:String="",val exampleBn:String="")
+data class Lesson(val level:String,val base:String,val ruby:String,val bn:String,val en:String,val type:String,val example:String="",val exampleRuby:String="",val exampleBn:String="",val exampleEn:String="")
 val lessons=listOf(
  Lesson("N5","食べる","たべる","খাওয়া","to eat","語彙","ご飯を食べます。","ごはんを たべます。","আমি ভাত খাই।"),
  Lesson("N5","飲む","のむ","পান করা","to drink","語彙","水を飲みます。","みずを のみます。","আমি পানি পান করি।"),
