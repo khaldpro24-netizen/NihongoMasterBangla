@@ -1107,6 +1107,7 @@ class MainActivity:ComponentActivity(){
       (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en,x.example,x.exampleRuby,x.exampleBn,x.exampleEn).any{s->s.contains(query,true)}) &&
       (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
    }
+   if(contentType!="漢字") Text("দেখানো হচ্ছে ${shown.size}টি • ${if(contentType=="語彙") "Vocabulary" else "Grammar"}",Modifier.padding(top=4.dp),fontSize=13.sp,color=MaterialTheme.colorScheme.primary)
    if(shown.isEmpty() && contentType!="漢字") Text(if(query.isNotBlank()) "কোনো ফলাফল পাওয়া যায়নি • 検索結果なし" else if(studyFilter=="না-পড়া") "🎉 এই অংশের সব শব্দ শেখা হয়েছে!" else if(studyFilter=="শিখেছি") "এখনও কোনো শব্দ Learned করা হয়নি।" else "এই অংশে এখনো content নেই।",Modifier.padding(vertical=12.dp),fontSize=15.sp,fontWeight=FontWeight.SemiBold)
    LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){
     if(contentType=="漢字" && level=="N5"){
