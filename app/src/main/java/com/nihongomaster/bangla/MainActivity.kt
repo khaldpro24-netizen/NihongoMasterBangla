@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 
-data class Lesson(val level:String,val base:String,val ruby:String,val bn:String,val en:String,val type:String,val example:String="",val exampleRuby:String="",val exampleBn:String="",val exampleEn:String="")
+data class Lesson(val level:String,val base:String,val ruby:String,val bn:String,val en:String,val type:String,val example:String="",val exampleRuby:String="",val exampleBn:String="",val exampleEn:String="",val courseLesson:Int?=null)
 val lessons=listOf(
  *n4MinnaVocabulary.toTypedArray(),
  Lesson("N5","食べる","たべる","খাওয়া","to eat","語彙","ご飯を食べます。","ごはんを たべます。","আমি ভাত খাই।","I eat rice."),
@@ -1120,7 +1120,7 @@ class MainActivity:ComponentActivity(){
      item{Text("এই level-এর Kanji content পরে যোগ হবে।",Modifier.padding(16.dp))}
     } else items(shown,key={it.level+"|"+it.type+"|"+it.base}){x->
     Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
-     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text(x.type+" • "+x.level)});TextButton(onClick={speak(if(x.ruby.isNotBlank()) x.ruby else x.base)}){Text("🔊 発音")}}
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text(x.type+" • "+x.level+(x.courseLesson?.let{" • Lesson $it"} ?: ""))});TextButton(onClick={speak(if(x.ruby.isNotBlank()) x.ruby else x.base)}){Text("🔊 発音")}}
      RubyText(x.base,x.ruby,Modifier.fillMaxWidth())
      Spacer(Modifier.height(10.dp));Text("🇧🇩  "+x.bn,fontSize=17.sp);Text("🇬🇧  "+x.en,fontSize=15.sp)
      if(x.example.isNotBlank()){HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold);RubyText(x.example,x.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  "+x.exampleBn);if(x.exampleEn.isNotBlank()) Text("🇬🇧  "+x.exampleEn)}
