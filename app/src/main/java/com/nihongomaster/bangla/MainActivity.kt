@@ -34,6 +34,7 @@ import java.util.Locale
 data class Lesson(val level:String,val base:String,val ruby:String,val bn:String,val en:String,val type:String,val example:String="",val exampleRuby:String="",val exampleBn:String="",val exampleEn:String="",val courseLesson:Int?=null)
 val lessons=listOf(
  *n4MinnaVocabulary.toTypedArray(),
+ *n4Grammar.toTypedArray(),
  Lesson("N5","食べる","たべる","খাওয়া","to eat","語彙","ご飯を食べます。","ごはんを たべます。","আমি ভাত খাই।","I eat rice."),
  Lesson("N5","飲む","のむ","পান করা","to drink","語彙","水を飲みます。","みずを のみます。","আমি পানি পান করি।","I drink water."),
  Lesson("N5","見る","みる","দেখা","to see / watch","語彙","テレビを見ます。","テレビを みます。","আমি টিভি দেখি।","I watch TV."),
