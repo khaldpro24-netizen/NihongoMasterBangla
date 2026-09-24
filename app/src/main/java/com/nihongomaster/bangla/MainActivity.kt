@@ -1038,7 +1038,39 @@ class MainActivity:ComponentActivity(){
   Column(Modifier.padding(p).padding(horizontal=14.dp)){
    Spacer(Modifier.height(12.dp))
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){AssistChip(onClick={infoPage=if(infoPage=="kana")"" else "kana"},label={Text("あ ア • Kana")});AssistChip(onClick={infoPage=if(infoPage=="about")"" else "about"},label={Text("ⓘ About")})}
-   if(infoPage=="kana"){Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){Text("ひらがな・カタカナ",fontSize=24.sp,fontWeight=FontWeight.Bold);Text("Hiragana & Katakana • প্রথমে এগুলো শিখুন");Spacer(Modifier.height(8.dp));listOf("あ い う え お    ア イ ウ エ オ","か き く け こ    カ キ ク ケ コ","さ し す せ そ    サ シ ス セ ソ","た ち つ て と    タ チ ツ テ ト","な に ぬ ね の    ナ ニ ヌ ネ ノ","は ひ ふ へ ほ    ハ ヒ フ ヘ ホ","ま み む め も    マ ミ ム メ モ","や   ゆ   よ       ヤ   ユ   ヨ","ら り る れ ろ    ラ リ ル レ ロ","わ       を ん    ワ       ヲ ン").forEach{Text(it,fontSize=18.sp,modifier=Modifier.padding(vertical=3.dp))};HorizontalDivider(Modifier.padding(vertical=8.dp));Text("濁音・半濁音: が ざ だ ば ぱ / ガ ザ ダ バ パ");Text("小さい文字: きゃ・きゅ・きょ / キャ・キュ・キョ / っ・ッ")}};Spacer(Modifier.height(8.dp))}
+   if(infoPage=="kana"){
+    Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(22.dp)){Column(Modifier.padding(18.dp)){
+     Text("かなを学ぼう",fontSize=25.sp,fontWeight=FontWeight.Bold)
+     Text("ひらがな • カタカナ",fontSize=16.sp,color=MaterialTheme.colorScheme.primary)
+     Text("একসাথে Hiragana ও Katakana শিখুন",fontSize=14.sp)
+     Spacer(Modifier.height(14.dp))
+     listOf(
+      "あ  い  う  え  お     ア  イ  ウ  エ  オ",
+      "か  き  く  け  こ     カ  キ  ク  ケ  コ",
+      "が  ぎ  ぐ  げ  ご     ガ  ギ  グ  ゲ  ゴ",
+      "さ  し  す  せ  そ     サ  シ  ス  セ  ソ",
+      "ざ  じ  ず  ぜ  ぞ     ザ  ジ  ズ  ゼ  ゾ",
+      "た  ち  つ  て  と     タ  チ  ツ  テ  ト",
+      "だ  ぢ  づ  で  ど     ダ  ヂ  ヅ  デ  ド",
+      "な  に  ぬ  ね  の     ナ  ニ  ヌ  ネ  ノ",
+      "は  ひ  ふ  へ  ほ     ハ  ヒ  フ  ヘ  ホ",
+      "ば  び  ぶ  べ  ぼ     バ  ビ  ブ  ベ  ボ",
+      "ぱ  ぴ  ぷ  ぺ  ぽ     パ  ピ  プ  ペ  ポ",
+      "ま  み  む  め  も     マ  ミ  ム  メ  モ",
+      "や      ゆ      よ      ヤ      ユ      ヨ",
+      "ら  り  る  れ  ろ     ラ  リ  ル  レ  ロ",
+      "わ              を  ん   ワ              ヲ  ン"
+     ).forEach{Text(it,fontSize=17.sp,lineHeight=25.sp)}
+     HorizontalDivider(Modifier.padding(vertical=12.dp))
+     Text("拗音 • Combined sounds",fontWeight=FontWeight.Bold)
+     Text("きゃ きゅ きょ　しゃ しゅ しょ　ちゃ ちゅ ちょ",fontSize=16.sp)
+     Text("キャ キュ キョ　シャ シュ ショ　チャ チュ チョ",fontSize=16.sp)
+     Spacer(Modifier.height(8.dp))
+     Text("促音 • ছোট っ / ッ",fontWeight=FontWeight.Bold)
+     Text("きって • キット  — পরের consonant একটু থামিয়ে বলুন",fontSize=14.sp)
+    }}
+    Spacer(Modifier.height(10.dp))
+   }
    if(infoPage=="about"){Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){Text("Nihongo Master বাংলা",fontSize=24.sp,fontWeight=FontWeight.Bold);Text("日本語学習アプリ • Japanese Learning App");HorizontalDivider(Modifier.padding(vertical=12.dp));Text("Created by",fontWeight=FontWeight.SemiBold);Text("মোঃ খালিদ হাসান",fontSize=20.sp,fontWeight=FontWeight.Bold);Text("Md Khalid Hasan",fontSize=18.sp);Text("エムディカリドハサン",fontSize=18.sp);Spacer(Modifier.height(10.dp));Text("Developed with the assistance of AI",fontSize=13.sp)}};Spacer(Modifier.height(8.dp))}
    OutlinedTextField(query,{query=it},Modifier.fillMaxWidth(),singleLine=true,label={Text("Search • 検索")},placeholder={Text("日本語 / বাংলা / English")})
    Spacer(Modifier.height(8.dp))
