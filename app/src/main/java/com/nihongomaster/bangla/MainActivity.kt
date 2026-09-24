@@ -1017,7 +1017,7 @@ class MainActivity:ComponentActivity(){
 @Composable fun App(speak:(String)->Unit){
  var level by rememberSaveable{mutableStateOf("N5")}
  var query by rememberSaveable{mutableStateOf("")}
- var studyFilter by rememberSaveable{mutableStateOf("সব")}
+ var studyFilter by rememberSaveable{mutableStateOf("সব")}\n var contentType by rememberSaveable{mutableStateOf("語彙")}
  val context=LocalContext.current
  val prefs=remember{context.getSharedPreferences("study_progress",Context.MODE_PRIVATE)}
  var learnedKeys by remember{mutableStateOf(prefs.getString("learned_keys","") ?: "")}
@@ -1033,14 +1033,32 @@ class MainActivity:ComponentActivity(){
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
    Text("$level Vocabulary  $learnedCount / ${levelVocab.size}",fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={if(levelVocab.isEmpty()) 0f else learnedCount.toFloat()/levelVocab.size},Modifier.fillMaxWidth())
-   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
-   TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
-   val shown=lessons.filter{x->
+   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
+   if(contentType=="語彙") Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
+   if(contentType=="語彙") TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
+   val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
-    x.level==level && (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en).any{s->s.contains(query,true)}) &&
+    x.level==level && x.type==contentType && (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en).any{s->s.contains(query,true)}) &&
       (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
    }
-   LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){items(shown,key={it.level+"|"+it.type+"|"+it.base}){x->
+   LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){
+    if(contentType=="漢字" && level=="N5"){
+     val ks=n5Kanji.filter{k->query.isBlank() || listOf(k.kanji,k.on,k.kun,k.bn,k.en,k.words).any{it.contains(query,true)}}
+     items(ks,key={it.kanji}){k->
+      Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(k.kun.replace("・","、"))}){Text("🔊 発音")}}
+       Text(k.kanji,fontSize=44.sp,fontWeight=FontWeight.Bold,modifier=Modifier.align(Alignment.CenterHorizontally))
+       Text("音読み: ${k.on}",fontWeight=FontWeight.SemiBold);Text("訓読み: ${k.kun}",fontWeight=FontWeight.SemiBold)
+       Spacer(Modifier.height(6.dp));Text("🇧🇩  ${k.bn}",fontSize=17.sp);Text("🇬🇧  ${k.en}",fontSize=15.sp)
+       HorizontalDivider(Modifier.padding(vertical=10.dp));Text("🧠 মনে রাখুন: ${k.mnemonicBn}")
+       Spacer(Modifier.height(6.dp));Text("単語 • Words",fontWeight=FontWeight.SemiBold);Text(k.words)
+       HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold)
+       RubyText(k.example,k.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  ${k.exampleBn}");Text("🇬🇧  ${k.exampleEn}")
+      }}
+     }
+    } else if(contentType=="漢字"){
+     item{Text("এই level-এর Kanji content পরে যোগ হবে।",Modifier.padding(16.dp))}
+    } else items(shown,key={it.level+"|"+it.type+"|"+it.base}){x->
     Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text(x.type+" • "+x.level)});TextButton(onClick={speak(if(x.ruby.isNotBlank()) x.ruby else x.base)}){Text("🔊 発音")}}
      RubyText(x.base,x.ruby,Modifier.fillMaxWidth())
