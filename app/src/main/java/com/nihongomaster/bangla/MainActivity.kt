@@ -1048,13 +1048,20 @@ class MainActivity:ComponentActivity(){
      items(ks,key={it.kanji}){k->
       Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(k.kun.replace("・","、"))}){Text("🔊 発音")}}
-       Text(k.kanji,fontSize=44.sp,fontWeight=FontWeight.Bold,modifier=Modifier.align(Alignment.CenterHorizontally))
-       Text("音読み: ${k.on}",fontWeight=FontWeight.SemiBold);Text("訓読み: ${k.kun}",fontWeight=FontWeight.SemiBold)
-       Spacer(Modifier.height(6.dp));Text("🇧🇩  ${k.bn}",fontSize=17.sp);Text("🇬🇧  ${k.en}",fontSize=15.sp)
-       HorizontalDivider(Modifier.padding(vertical=10.dp));Text("🧠 মনে রাখুন: ${k.mnemonicBn}")
-       Spacer(Modifier.height(6.dp));Text("単語 • Words",fontWeight=FontWeight.SemiBold);Text(k.words)
-       HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold)
-       RubyText(k.example,k.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  ${k.exampleBn}");Text("🇬🇧  ${k.exampleEn}")
+       Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),tonalElevation=2.dp){Text(k.kanji,fontSize=64.sp,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,modifier=Modifier.padding(vertical=18.dp))}
+       Spacer(Modifier.height(10.dp))
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+        Surface(Modifier.weight(1f),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("音読み • On’yomi",fontWeight=FontWeight.Bold);Text(k.on,fontSize=20.sp)}}
+        Surface(Modifier.weight(1f),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("訓読み • Kun’yomi",fontWeight=FontWeight.Bold);Text(k.kun,fontSize=20.sp)}}
+       }
+       Spacer(Modifier.height(8.dp))
+       Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("📖 অর্থ • Meaning",fontWeight=FontWeight.Bold);Text("🇧🇩  ${k.bn}",fontSize=17.sp);Text("🇬🇧  ${k.en}",fontSize=15.sp)}}
+       Spacer(Modifier.height(8.dp))
+       Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("✏️ Stroke • ${k.strokes}画",fontWeight=FontWeight.Bold);Text("🧠 মনে রাখুন: ${k.mnemonicBn}")}}
+       Spacer(Modifier.height(8.dp))
+       Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("単語 • Useful Words",fontWeight=FontWeight.Bold);Text(k.words)}}
+       Spacer(Modifier.height(8.dp))
+       Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("例文 • Example",fontWeight=FontWeight.Bold);RubyText(k.example,k.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  ${k.exampleBn}");Text("🇬🇧  ${k.exampleEn}")}}
       }}
      }
     } else if(contentType=="漢字"){
