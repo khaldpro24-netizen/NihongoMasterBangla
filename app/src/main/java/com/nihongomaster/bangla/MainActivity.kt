@@ -960,7 +960,7 @@ val lessons=listOf(
 
 class MainActivity:ComponentActivity(){
  private var tts:TextToSpeech?=null
- override fun onCreate(b:Bundle?){super.onCreate(b);tts=TextToSpeech(this){if(it==TextToSpeech.SUCCESS)tts?.language=Locale.JAPAN};setContent{MaterialTheme{App{txt->tts?.speak(txt,TextToSpeech.QUEUE_FLUSH,null,"jp")}}}}
+ override fun onCreate(b:Bundle?){super.onCreate(b);tts=TextToSpeech(this){if(it==TextToSpeech.SUCCESS){tts?.language=Locale.JAPAN;tts?.setSpeechRate(0.85f)}};setContent{MaterialTheme{App{txt->tts?.speak("「${txt}」",TextToSpeech.QUEUE_FLUSH,null,"jp")}}}}
  override fun onDestroy(){tts?.stop();tts?.shutdown();super.onDestroy()}
 }
 
