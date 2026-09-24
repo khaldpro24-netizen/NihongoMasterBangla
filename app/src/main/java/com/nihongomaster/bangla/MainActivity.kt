@@ -1080,9 +1080,11 @@ class MainActivity:ComponentActivity(){
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l},{Text(l)})}}
    val levelVocab=lessons.filter{it.level==level && it.type=="語彙"}
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
+   val lessonVocab=if(level=="N4" && selectedCourseLesson!=null) levelVocab.filter{it.courseLesson==selectedCourseLesson} else levelVocab
+   val lessonLearned=lessonVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
    val kanjiLearned=if(level=="N5") n5Kanji.count{learned.contains("N5|漢字|"+it.kanji)} else 0
-   val progressLabel=if(contentType=="漢字" && level=="N5") "N5 Kanji  $kanjiLearned / ${n5Kanji.size}" else "$level Vocabulary  $learnedCount / ${levelVocab.size}"
-   val progressValue=if(contentType=="漢字" && level=="N5"){if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size}else{if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
+   val progressLabel=when{contentType=="漢字" && level=="N5"->"N5 Kanji  $kanjiLearned / ${n5Kanji.size}";level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->"N4 • Lesson $selectedCourseLesson  $lessonLearned / ${lessonVocab.size}";else->"$level Vocabulary  $learnedCount / ${levelVocab.size}"}
+   val progressValue=when{contentType=="漢字" && level=="N5"->if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size;level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->if(lessonVocab.isEmpty())0f else lessonLearned.toFloat()/lessonVocab.size;else->if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t;selectedCourseLesson=null},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
