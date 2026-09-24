@@ -1092,6 +1092,7 @@ class MainActivity:ComponentActivity(){
    val progressValue=when{contentType=="漢字" && level=="N5"->if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size;level=="N4" && contentType=="語彙" && selectedCourseLesson!=null->if(lessonVocab.isEmpty())0f else lessonLearned.toFloat()/lessonVocab.size;else->if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
+   if(level=="N4" && contentType=="語彙"){val completedLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().count{lessonNo->val items=levelVocab.filter{it.courseLesson==lessonNo};items.isNotEmpty() && items.all{learned.contains(it.level+"|"+it.type+"|"+it.base)}};val totalLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().size;Text("Minna no Nihongo • Lesson সম্পূর্ণ $completedLessons/$totalLessons",fontSize=13.sp,color=MaterialTheme.colorScheme.primary)}
    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t;selectedCourseLesson=null},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
    if(level=="N4" && contentType=="語彙"){
     val minnaLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted()
