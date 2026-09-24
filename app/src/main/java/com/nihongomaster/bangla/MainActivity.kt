@@ -1027,7 +1027,8 @@ class MainActivity:ComponentActivity(){
  var level by rememberSaveable{mutableStateOf("N5")}
  var query by rememberSaveable{mutableStateOf("")}
  var studyFilter by rememberSaveable{mutableStateOf("সব")}
- var contentType by rememberSaveable{mutableStateOf("語彙")}\n var infoPage by rememberSaveable{mutableStateOf("")}
+ var contentType by rememberSaveable{mutableStateOf("語彙")}
+ var infoPage by rememberSaveable{mutableStateOf("")}
  val context=LocalContext.current
  val prefs=remember{context.getSharedPreferences("study_progress",Context.MODE_PRIVATE)}
  var learnedKeys by remember{mutableStateOf(prefs.getString("learned_keys","") ?: "")}
