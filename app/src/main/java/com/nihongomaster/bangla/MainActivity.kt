@@ -1092,7 +1092,11 @@ class MainActivity:ComponentActivity(){
     val minnaLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted()
     LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp),contentPadding=PaddingValues(vertical=4.dp)){
      item{FilterChip(selectedCourseLesson==null,{selectedCourseLesson=null},{Text("সব Lesson")})}
-     items(minnaLessons,key={it}){lessonNo->FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text("Lesson $lessonNo")})}
+     items(minnaLessons,key={it}){lessonNo->
+      val lessonItems=levelVocab.filter{it.courseLesson==lessonNo}
+      val lessonDone=lessonItems.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
+      FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text("Lesson $lessonNo  $lessonDone/${lessonItems.size}")})
+     }
     }
    }
    if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
