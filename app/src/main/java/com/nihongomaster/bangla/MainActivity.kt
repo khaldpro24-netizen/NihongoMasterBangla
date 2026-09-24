@@ -1029,6 +1029,7 @@ class MainActivity:ComponentActivity(){
  var query by rememberSaveable{mutableStateOf("")}
  var studyFilter by rememberSaveable{mutableStateOf("সব")}
  var contentType by rememberSaveable{mutableStateOf("語彙")}
+ var selectedCourseLesson by rememberSaveable{mutableStateOf<Int?>(null)}
  var infoPage by rememberSaveable{mutableStateOf("")}
  val context=LocalContext.current
  val prefs=remember{context.getSharedPreferences("study_progress",Context.MODE_PRIVATE)}
@@ -1083,12 +1084,20 @@ class MainActivity:ComponentActivity(){
    val progressValue=if(contentType=="漢字" && level=="N5"){if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size}else{if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
-   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
+   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t;selectedCourseLesson=null},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
+   if(level=="N4" && contentType=="語彙"){
+    val minnaLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted()
+    LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp),contentPadding=PaddingValues(vertical=4.dp)){
+     item{FilterChip(selectedCourseLesson==null,{selectedCourseLesson=null},{Text("সব Lesson")})}
+     items(minnaLessons,key={it}){lessonNo->FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text("Lesson $lessonNo")})}
+    }
+   }
    if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
    if(contentType=="語彙" || (contentType=="漢字" && level=="N5")) TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
-    x.level==level && x.type==contentType && (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en).any{s->s.contains(query,true)}) &&
+    x.level==level && x.type==contentType && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
+      (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en,x.example,x.exampleRuby,x.exampleBn,x.exampleEn).any{s->s.contains(query,true)}) &&
       (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
    }
    LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){
