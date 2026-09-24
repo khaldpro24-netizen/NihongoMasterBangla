@@ -1041,8 +1041,9 @@ class MainActivity:ComponentActivity(){
  var selectedCourseLesson by rememberSaveable{mutableStateOf<Int?>(null)}
  var infoPage by rememberSaveable{mutableStateOf("")}
  var translateText by rememberSaveable{mutableStateOf("")}
+ var translateLang by rememberSaveable{mutableStateOf("bn")}
  val context=LocalContext.current
- if(translateText.isNotBlank()) AlertDialog(onDismissRequest={translateText=""},title={Text("🌐 Translation")},text={Column{Text("Japanese",fontWeight=FontWeight.Bold);Text(translateText);Spacer(Modifier.height(12.dp));Text("Google Translate-এ target language নির্বাচন করুন।",fontSize=13.sp)}},confirmButton={Button(onClick={val url="https://translate.google.com/?sl=ja&tl=auto&text="+Uri.encode(translateText)+"&op=translate";context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){Text("অনুবাদ খুলুন")}},dismissButton={TextButton(onClick={translateText=""}){Text("বন্ধ করুন")}})
+ if(translateText.isNotBlank()) AlertDialog(onDismissRequest={translateText=""},title={Text("🌐 Translation")},text={Column{Text("Japanese",fontWeight=FontWeight.Bold);Text(translateText);Spacer(Modifier.height(12.dp));Text("অনুবাদের ভাষা",fontWeight=FontWeight.SemiBold);LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){items(listOf("bn" to "বাংলা","en" to "English","hi" to "हिन्दी","ar" to "العربية","ko" to "한국어","zh-CN" to "中文")){(code,name)->FilterChip(translateLang==code,{translateLang=code},{Text(name)})}};Text("আরও ভাষা Google Translate-এ পরিবর্তন করা যাবে।",fontSize=12.sp)}},confirmButton={Button(onClick={val url="https://translate.google.com/?sl=ja&tl="+translateLang+"&text="+Uri.encode(translateText)+"&op=translate";context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){Text("অনুবাদ খুলুন")}},dismissButton={TextButton(onClick={translateText=""}){Text("বন্ধ করুন")}})
  val prefs=remember{context.getSharedPreferences("study_progress",Context.MODE_PRIVATE)}
  var learnedKeys by remember{mutableStateOf(prefs.getString("learned_keys","") ?: "")}
  val learned=remember(learnedKeys){learnedKeys.split("§").filter{it.isNotBlank()}.toSet()}
