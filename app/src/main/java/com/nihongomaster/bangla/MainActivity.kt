@@ -1050,7 +1050,7 @@ class MainActivity:ComponentActivity(){
      val ks=n5Kanji.filter{k->val key="N5|漢字|"+k.kanji;(query.isBlank() || listOf(k.kanji,k.on,k.kun,k.bn,k.en,k.words).any{it.contains(query,true)}) && (studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))}
      items(ks,key={it.kanji}){k->
       Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
-       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(k.kun.replace("・","、"))}){Text("🔊 発音")}}
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text("漢字 • N5 • ${k.strokes}画")});TextButton(onClick={speak(if(k.exampleRuby.isNotBlank()) k.exampleRuby else if(k.kun!="—") k.kun.replace("・","、") else k.on.replace("・","、"))}){Text("🔊 例文")}}
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),tonalElevation=2.dp){Text(k.kanji,fontSize=64.sp,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,modifier=Modifier.padding(vertical=18.dp))}
        Spacer(Modifier.height(10.dp))
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
