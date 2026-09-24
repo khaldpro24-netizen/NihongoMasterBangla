@@ -19,6 +19,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
@@ -1042,7 +1045,10 @@ class MainActivity:ComponentActivity(){
  var learnedKeys by remember{mutableStateOf(prefs.getString("learned_keys","") ?: "")}
  val learned=remember(learnedKeys){learnedKeys.split("§").filter{it.isNotBlank()}.toSet()}
  val listState=rememberLazyListState()
- Scaffold(topBar={Surface(tonalElevation=4.dp){Column(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=14.dp)){Text("日本語マスター",fontSize=27.sp,fontWeight=FontWeight.Bold);Text("Nihongo Master বাংলা  •  JLPT N5 → N1",fontSize=13.sp)}}}){p->
+ var studySeconds by remember{mutableLongStateOf(prefs.getLong("study_seconds",0L))}
+ val lifecycleOwner=LocalLifecycleOwner.current
+ DisposableEffect(lifecycleOwner){var startedAt=if(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) System.currentTimeMillis() else 0L;val observer=LifecycleEventObserver{_,event->when(event){Lifecycle.Event.ON_RESUME->startedAt=System.currentTimeMillis();Lifecycle.Event.ON_PAUSE->if(startedAt>0L){studySeconds+=(System.currentTimeMillis()-startedAt)/1000;prefs.edit().putLong("study_seconds",studySeconds).apply();startedAt=0L};else->{}}};lifecycleOwner.lifecycle.addObserver(observer);onDispose{if(startedAt>0L){studySeconds+=(System.currentTimeMillis()-startedAt)/1000;prefs.edit().putLong("study_seconds",studySeconds).apply()};lifecycleOwner.lifecycle.removeObserver(observer)}}
+ Scaffold(topBar={Surface(tonalElevation=4.dp){Column(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=14.dp)){Text("日本語マスター",fontSize=27.sp,fontWeight=FontWeight.Bold);Text("Nihongo Master বাংলা  •  JLPT N5 → N1",fontSize=13.sp);Text("⏱ মোট Study Time: ${studySeconds/3600}ঘ ${studySeconds%3600/60}মি",fontSize=12.sp,color=MaterialTheme.colorScheme.primary)}}}){p->
   Column(Modifier.padding(p).padding(horizontal=14.dp)){
    Spacer(Modifier.height(12.dp))
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){AssistChip(onClick={infoPage=if(infoPage=="kana")"" else "kana"},label={Text("あ ア • Kana")});AssistChip(onClick={infoPage=if(infoPage=="about")"" else "about"},label={Text("ⓘ About")})}
