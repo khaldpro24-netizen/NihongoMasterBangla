@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -972,23 +974,36 @@ class MainActivity:ComponentActivity(){
 }
 
 @Composable fun App(speak:(String)->Unit){
- var level by remember{mutableStateOf("N5")}
- var query by remember{mutableStateOf("")}
+ var level by rememberSaveable{mutableStateOf("N5")}
+ var query by rememberSaveable{mutableStateOf("")}
+ var studyFilter by rememberSaveable{mutableStateOf("সব")}
+ var learnedKeys by rememberSaveable{mutableStateOf("")}
+ val learned=remember(learnedKeys){learnedKeys.split("§").filter{it.isNotBlank()}.toSet()}
+ val listState=rememberLazyListState()
  Scaffold(topBar={Surface(tonalElevation=4.dp){Column(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=14.dp)){Text("日本語マスター",fontSize=27.sp,fontWeight=FontWeight.Bold);Text("Nihongo Master বাংলা  •  JLPT N5 → N1",fontSize=13.sp)}}}){p->
   Column(Modifier.padding(p).padding(horizontal=14.dp)){
    Spacer(Modifier.height(12.dp))
    OutlinedTextField(query,{query=it},Modifier.fillMaxWidth(),singleLine=true,label={Text("Search • 検索")},placeholder={Text("日本語 / বাংলা / English")})
    Spacer(Modifier.height(8.dp))
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l},{Text(l)})}}
-   Text("Vocabulary • Grammar • Conversation",fontSize=13.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
-   Spacer(Modifier.height(8.dp))
-   val shown=lessons.filter{it.level==level && (query.isBlank() || listOf(it.base,it.ruby,it.bn,it.en).any{s->s.contains(query,true)})}
-   LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){items(shown){x->
+   val levelVocab=lessons.filter{it.level==level && it.type=="語彙"}
+   val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
+   Text("$level Vocabulary  $learnedCount / ${levelVocab.size}",fontSize=14.sp,fontWeight=FontWeight.SemiBold)
+   LinearProgressIndicator(progress={if(levelVocab.isEmpty()) 0f else learnedCount.toFloat()/levelVocab.size},Modifier.fillMaxWidth())
+   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
+   TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
+   val shown=lessons.filter{x->
+    val key=x.level+"|"+x.type+"|"+x.base
+    x.level==level && (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en).any{s->s.contains(query,true)}) &&
+      (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
+   }
+   LazyColumn(state=listState,verticalArrangement=Arrangement.spacedBy(10.dp),contentPadding=PaddingValues(bottom=24.dp)){items(shown,key={it.level+"|"+it.type+"|"+it.base}){x->
     Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(16.dp)){
      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){AssistChip(onClick={},label={Text(x.type+" • "+x.level)});TextButton(onClick={speak(if(x.ruby.isNotBlank()) x.ruby else x.base)}){Text("🔊 発音")}}
      RubyText(x.base,x.ruby,Modifier.fillMaxWidth())
      Spacer(Modifier.height(10.dp));Text("🇧🇩  "+x.bn,fontSize=17.sp);Text("🇬🇧  "+x.en,fontSize=15.sp)
-     if(x.example.isNotBlank()){HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold);RubyText(x.example,x.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  "+x.exampleBn)}
+     if(x.example.isNotBlank()){HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold);RubyText(x.example,x.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  "+x.exampleBn);if(x.exampleEn.isNotBlank()) Text("🇬🇧  "+x.exampleEn)}
+     if(x.type=="語彙"){val key=x.level+"|"+x.type+"|"+x.base;val done=learned.contains(key);TextButton(onClick={val next=learned.toMutableSet();if(done)next.remove(key) else next.add(key);learnedKeys=next.joinToString("§")}){Text(if(done)"✓ শিখেছি" else "○ শিখেছি / Learned")}}
     }}
    }}
   }
