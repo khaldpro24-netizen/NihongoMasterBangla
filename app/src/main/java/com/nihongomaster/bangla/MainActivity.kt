@@ -3,6 +3,8 @@ package com.nihongomaster.bangla
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
@@ -1146,6 +1148,7 @@ class MainActivity:ComponentActivity(){
      Spacer(Modifier.height(10.dp));Text("🇧🇩  "+x.bn,fontSize=17.sp);Text("🇬🇧  "+x.en,fontSize=15.sp)
      if(x.example.isNotBlank()){HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold);RubyText(x.example,x.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  "+x.exampleBn);if(x.exampleEn.isNotBlank()) Text("🇬🇧  "+x.exampleEn)}
      Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){TextButton(onClick={val clipboard=context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager;clipboard.setPrimaryClip(ClipData.newPlainText("Japanese word",x.base+"\n"+x.ruby+"\n"+x.bn+"\n"+x.en));Toast.makeText(context,"শব্দ কপি হয়েছে ✓",Toast.LENGTH_SHORT).show()}){Text("📋 শব্দ Copy")};if(x.example.isNotBlank()) TextButton(onClick={val clipboard=context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager;clipboard.setPrimaryClip(ClipData.newPlainText("Japanese example",x.example+"\n"+x.exampleRuby+"\n"+x.exampleBn+(if(x.exampleEn.isNotBlank())"\n"+x.exampleEn else "")));Toast.makeText(context,"উদাহরণ কপি হয়েছে ✓",Toast.LENGTH_SHORT).show()}){Text("📋 Example")}}
+     TextButton(onClick={val source=if(x.example.isNotBlank()) x.base+"\n"+x.example else x.base;val url="https://translate.google.com/?sl=ja&tl=auto&text="+Uri.encode(source)+"&op=translate";context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){Text("🌐 Translate • যেকোনো ভাষা")}
      if(x.type=="語彙"){val key=x.level+"|"+x.type+"|"+x.base;val done=learned.contains(key);TextButton(onClick={val next=learned.toMutableSet();if(done)next.remove(key) else next.add(key);learnedKeys=next.joinToString("§");prefs.edit().putString("learned_keys",learnedKeys).apply()}){Text(if(done)"✓ শিখেছি" else "○ শিখেছি / Learned")}}
     }}
    }}
