@@ -1100,7 +1100,8 @@ class MainActivity:ComponentActivity(){
      items(minnaLessons,key={it}){lessonNo->
       val lessonItems=levelVocab.filter{it.courseLesson==lessonNo}
       val lessonDone=lessonItems.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
-      FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text("Lesson $lessonNo  $lessonDone/${lessonItems.size}")})
+      val lessonComplete=lessonItems.isNotEmpty() && lessonDone==lessonItems.size
+      FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text((if(lessonComplete)"✓ " else "")+"Lesson $lessonNo  $lessonDone/${lessonItems.size}")})
      }
     }
    }
