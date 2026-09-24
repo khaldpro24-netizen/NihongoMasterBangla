@@ -618,7 +618,7 @@ val lessons=listOf(
  Lesson("N5","二十日","はつか","২০ তারিখ / বিশ দিন","twentieth day / twenty days","語彙","二十日に給料が入ります。","はつかにきゅうりょうがはいります。","বিশ তারিখে বেতন আসে।","My salary is paid on the twentieth."),
  Lesson("N5","三人","さんにん","তিনজন","three people","語彙","三人で行きます。","さんにんでいきます。","তিনজন মিলে যাব।","The three of us will go."),
  Lesson("N5","一つ","ひとつ","একটি","one thing","語彙","りんごを一つください。","りんごをひとつください。","একটি আপেল দিন।","One apple, please."),
- Lesson("N5","二つ","ふたつ","দুটি","two things","語彙","パンを二つください。","パンをふたつください。","দুটি রুটি দিন।","Two breads, please."),
+ Lesson("N5","二つ","ふたつ","দুটি","two things","語彙","パンを二つください。","パンをふたつください。","দুটি পাউরুটি দিন।","Two pieces of bread, please."),
  Lesson("N5","三つ","みっつ","তিনটি","three things","語彙","三つあります。","みっつあります。","তিনটি আছে।","There are three."),
  Lesson("N5","四つ","よっつ","চারটি","four things","語彙","四つ買いました。","よっつかいました。","চারটি কিনেছি।","I bought four."),
  Lesson("N5","五つ","いつつ","পাঁচটি","five things","語彙","五つください。","いつつください。","পাঁচটি দিন।","Please give me five."),
