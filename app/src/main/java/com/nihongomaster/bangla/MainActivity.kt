@@ -1032,8 +1032,11 @@ class MainActivity:ComponentActivity(){
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l},{Text(l)})}}
    val levelVocab=lessons.filter{it.level==level && it.type=="語彙"}
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
-   Text("$level Vocabulary  $learnedCount / ${levelVocab.size}",fontSize=14.sp,fontWeight=FontWeight.SemiBold)
-   LinearProgressIndicator(progress={if(levelVocab.isEmpty()) 0f else learnedCount.toFloat()/levelVocab.size},Modifier.fillMaxWidth())
+   val kanjiLearned=if(level=="N5") n5Kanji.count{learned.contains("N5|漢字|"+it.kanji)} else 0
+   val progressLabel=if(contentType=="漢字" && level=="N5") "N5 Kanji  $kanjiLearned / ${n5Kanji.size}" else "$level Vocabulary  $learnedCount / ${levelVocab.size}"
+   val progressValue=if(contentType=="漢字" && level=="N5"){if(n5Kanji.isEmpty())0f else kanjiLearned.toFloat()/n5Kanji.size}else{if(levelVocab.isEmpty())0f else learnedCount.toFloat()/levelVocab.size}
+   Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
+   LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
    Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
    if(contentType=="語彙") Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("সব","না-পড়া","শিখেছি").forEach{f->FilterChip(studyFilter==f,{studyFilter=f},{Text(f)})}}
    if(contentType=="語彙") TextButton(onClick={studyFilter="না-পড়া"}){Text("▶ Continue • যেখানে শেষ করেছিলেন")}
@@ -1062,6 +1065,9 @@ class MainActivity:ComponentActivity(){
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("単語 • Useful Words",fontWeight=FontWeight.Bold);Text(k.words)}}
        Spacer(Modifier.height(8.dp))
        Surface(Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp),tonalElevation=1.dp){Column(Modifier.padding(12.dp)){Text("例文 • Example",fontWeight=FontWeight.Bold);RubyText(k.example,k.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  ${k.exampleBn}");Text("🇬🇧  ${k.exampleEn}")}}
+       val kanjiKey="N5|漢字|"+k.kanji
+       val kanjiDone=learned.contains(kanjiKey)
+       TextButton(onClick={val next=learned.toMutableSet();if(kanjiDone)next.remove(kanjiKey) else next.add(kanjiKey);learnedKeys=next.joinToString("§");prefs.edit().putString("learned_keys",learnedKeys).apply()}){Text(if(kanjiDone)"✓ শিখেছি • Learned" else "○ শিখেছি / Learned")}
       }}
      }
     } else if(contentType=="漢字"){
