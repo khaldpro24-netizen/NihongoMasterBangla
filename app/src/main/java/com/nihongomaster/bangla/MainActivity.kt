@@ -2,6 +2,7 @@ package com.nihongomaster.bangla
 
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -977,7 +979,9 @@ class MainActivity:ComponentActivity(){
  var level by rememberSaveable{mutableStateOf("N5")}
  var query by rememberSaveable{mutableStateOf("")}
  var studyFilter by rememberSaveable{mutableStateOf("সব")}
- var learnedKeys by rememberSaveable{mutableStateOf("")}
+ val context=LocalContext.current
+ val prefs=remember{context.getSharedPreferences("study_progress",Context.MODE_PRIVATE)}
+ var learnedKeys by remember{mutableStateOf(prefs.getString("learned_keys","") ?: "")}
  val learned=remember(learnedKeys){learnedKeys.split("§").filter{it.isNotBlank()}.toSet()}
  val listState=rememberLazyListState()
  Scaffold(topBar={Surface(tonalElevation=4.dp){Column(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=14.dp)){Text("日本語マスター",fontSize=27.sp,fontWeight=FontWeight.Bold);Text("Nihongo Master বাংলা  •  JLPT N5 → N1",fontSize=13.sp)}}}){p->
@@ -1003,7 +1007,7 @@ class MainActivity:ComponentActivity(){
      RubyText(x.base,x.ruby,Modifier.fillMaxWidth())
      Spacer(Modifier.height(10.dp));Text("🇧🇩  "+x.bn,fontSize=17.sp);Text("🇬🇧  "+x.en,fontSize=15.sp)
      if(x.example.isNotBlank()){HorizontalDivider(Modifier.padding(vertical=10.dp));Text("例文 • Example",fontWeight=FontWeight.SemiBold);RubyText(x.example,x.exampleRuby,Modifier.fillMaxWidth());Text("🇧🇩  "+x.exampleBn);if(x.exampleEn.isNotBlank()) Text("🇬🇧  "+x.exampleEn)}
-     if(x.type=="語彙"){val key=x.level+"|"+x.type+"|"+x.base;val done=learned.contains(key);TextButton(onClick={val next=learned.toMutableSet();if(done)next.remove(key) else next.add(key);learnedKeys=next.joinToString("§")}){Text(if(done)"✓ শিখেছি" else "○ শিখেছি / Learned")}}
+     if(x.type=="語彙"){val key=x.level+"|"+x.type+"|"+x.base;val done=learned.contains(key);TextButton(onClick={val next=learned.toMutableSet();if(done)next.remove(key) else next.add(key);learnedKeys=next.joinToString("§");prefs.edit().putString("learned_keys",learnedKeys).apply()}){Text(if(done)"✓ শিখেছি" else "○ শিখেছি / Learned")}}
     }}
    }}
   }
