@@ -1041,6 +1041,7 @@ class MainActivity:ComponentActivity(){
  var studyFilter by rememberSaveable{mutableStateOf("সব")}
  var contentType by rememberSaveable{mutableStateOf("語彙")}
  var selectedCourseLesson by rememberSaveable{mutableStateOf<Int?>(null)}
+ var n5MinnaMode by rememberSaveable{mutableStateOf(false)}
  var infoPage by rememberSaveable{mutableStateOf("")}
  var translateText by rememberSaveable{mutableStateOf("")}
  var translateLang by rememberSaveable{mutableStateOf("bn")}
@@ -1093,7 +1094,9 @@ class MainActivity:ComponentActivity(){
    if(infoPage=="about"){Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(18.dp)){Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){Text("Nihongo Master বাংলা",fontSize=24.sp,fontWeight=FontWeight.Bold);Text("日本語学習アプリ • Japanese Learning App");HorizontalDivider(Modifier.padding(vertical=12.dp));Text("Created by",fontWeight=FontWeight.SemiBold);Text("মোঃ খালিদ হাসান",fontSize=20.sp,fontWeight=FontWeight.Bold);Text("Md Khalid Hasan",fontSize=18.sp);Text("エムディカリドハサン",fontSize=18.sp);Spacer(Modifier.height(10.dp));Text("Developed with the assistance of AI",fontSize=13.sp)}};Spacer(Modifier.height(8.dp))}
    OutlinedTextField(query,{query=it},Modifier.fillMaxWidth(),singleLine=true,label={Text("Search • 検索")},placeholder={Text("日本語 / বাংলা / English")})
    Spacer(Modifier.height(8.dp))
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l;selectedCourseLesson=null;studyFilter="সব"},{Text(l)})}}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){listOf("N5","N4","N3","N2","N1").forEach{l->FilterChip(level==l,{level=l;selectedCourseLesson=null;studyFilter="সব";n5MinnaMode=false},{Text(l)})}}
+   if(level=="N5"){Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!n5MinnaMode,{n5MinnaMode=false;selectedCourseLesson=null},{Text("📚 Complete N5")});FilterChip(n5MinnaMode,{n5MinnaMode=true;contentType="文法";selectedCourseLesson=null},{Text("📘 Minna Course")})}}
+   if(level=="N5" && n5MinnaMode){Text("Minna no Nihongo N5 • বিকল্প Course",fontSize=14.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary);LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp),contentPadding=PaddingValues(vertical=4.dp)){item{FilterChip(selectedCourseLesson==null,{selectedCourseLesson=null},{Text("সব Lesson")})};items(n5GrammarDetailed.mapNotNull{it.courseLesson}.distinct().sorted(),key={it}){lessonNo->FilterChip(selectedCourseLesson==lessonNo,{selectedCourseLesson=lessonNo},{Text("📂 Lesson $lessonNo")})}}}
    val levelVocab=lessons.filter{it.level==level && it.type=="語彙"}
    val learnedCount=levelVocab.count{learned.contains(it.level+"|"+it.type+"|"+it.base)}
    val lessonVocab=if(level=="N4" && selectedCourseLesson!=null) levelVocab.filter{it.courseLesson==selectedCourseLesson} else levelVocab
@@ -1123,7 +1126,7 @@ class MainActivity:ComponentActivity(){
    if(level=="N4" && contentType=="語彙" && selectedCourseLesson!=null && lessonVocab.isNotEmpty() && lessonLearned==lessonVocab.size){val nextIncomplete=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->lessonNo>selectedCourseLesson!! && levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}};if(nextIncomplete!=null) Button(onClick={selectedCourseLesson=nextIncomplete;studyFilter="না-পড়া"}){Text("পরের অসম্পূর্ণ Lesson → $nextIncomplete")} else Text("🎉 N4 Vocabulary-এর সব Lesson সম্পূর্ণ!",fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
-    x.level==level && x.type==contentType && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
+    x.level==level && x.type==contentType && (level!="N5" || !n5MinnaMode || (x in n5GrammarDetailed && (selectedCourseLesson==null || x.courseLesson==selectedCourseLesson))) && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
       (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en,x.example,x.exampleRuby,x.exampleBn,x.exampleEn).any{s->s.contains(query,true)}) &&
       (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
    }
