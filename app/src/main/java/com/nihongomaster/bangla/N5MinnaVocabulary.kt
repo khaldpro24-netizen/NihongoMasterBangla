@@ -328,7 +328,7 @@ val n5MinnaVocabulary = listOf(
  Lesson("N5","あそこ","あそこ","ওখানে","over there","語彙",courseLesson=7),
  Lesson("N5","ここ","ここ","এখানে","here","語彙",courseLesson=7),
  Lesson("N5","そこ","そこ","সেখানে","there","語彙",courseLesson=7),
- Lesson("N5","どこ","どこ","কোথায়","where","語彙",courseLesson=7),
+
  Lesson("N5","～や～","～や～","~ এবং ~ ইত্যাদি","~ and ~ (listing items)","語彙",courseLesson=7),
  Lesson("N5","どちら","どちら","কোনটি (ভদ্র)","which (polite)","語彙",courseLesson=7),
  Lesson("N5","どっち","どっち","কোনটি (অনানুষ্ঠানিক)","which (informal)","語彙",courseLesson=7),
