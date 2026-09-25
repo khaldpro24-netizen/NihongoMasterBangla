@@ -1126,7 +1126,7 @@ class MainActivity:ComponentActivity(){
    if(level=="N4" && contentType=="語彙" && selectedCourseLesson!=null && lessonVocab.isNotEmpty() && lessonLearned==lessonVocab.size){val nextIncomplete=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted().firstOrNull{lessonNo->lessonNo>selectedCourseLesson!! && levelVocab.any{it.courseLesson==lessonNo && !learned.contains(it.level+"|"+it.type+"|"+it.base)}};if(nextIncomplete!=null) Button(onClick={selectedCourseLesson=nextIncomplete;studyFilter="না-পড়া"}){Text("পরের অসম্পূর্ণ Lesson → $nextIncomplete")} else Text("🎉 N4 Vocabulary-এর সব Lesson সম্পূর্ণ!",fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)}
    val shown=if(contentType=="漢字") emptyList() else lessons.filter{x->
     val key=x.level+"|"+x.type+"|"+x.base
-    x.level==level && x.type==contentType && (level!="N5" || !n5MinnaMode || (x in n5GrammarDetailed && (selectedCourseLesson==null || x.courseLesson==selectedCourseLesson))) && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
+    x.level==level && x.type==contentType && (level!="N5" || (!n5MinnaMode && x !in n5GrammarDetailed) || (n5MinnaMode && x in n5GrammarDetailed && (selectedCourseLesson==null || x.courseLesson==selectedCourseLesson))) && (level!="N4" || contentType!="語彙" || selectedCourseLesson==null || x.courseLesson==selectedCourseLesson) &&
       (query.isBlank() || listOf(x.base,x.ruby,x.bn,x.en,x.example,x.exampleRuby,x.exampleBn,x.exampleEn).any{s->s.contains(query,true)}) &&
       (x.type!="語彙" || studyFilter=="সব" || (studyFilter=="শিখেছি" && learned.contains(key)) || (studyFilter=="না-পড়া" && !learned.contains(key)))
    }
