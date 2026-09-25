@@ -1040,7 +1040,7 @@ class MainActivity:ComponentActivity(){
  var level by rememberSaveable{mutableStateOf("N5")}
  var query by rememberSaveable{mutableStateOf("")}
  var studyFilter by rememberSaveable{mutableStateOf("সব")}
- var contentType by rememberSaveable{mutableStateOf("語彙")}
+ var contentType by rememberSaveable{mutableStateOf("語彙")}\n val minnaVideoUrl="https://youtu.be/OOEgU9RQRPI"
  var selectedCourseLesson by rememberSaveable{mutableStateOf<Int?>(null)}
  var n5MinnaMode by rememberSaveable{mutableStateOf(false)}
  var infoPage by rememberSaveable{mutableStateOf("")}
@@ -1109,7 +1109,7 @@ class MainActivity:ComponentActivity(){
    Text(progressLabel,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
    LinearProgressIndicator(progress={progressValue},Modifier.fillMaxWidth())
    if(level=="N4" && contentType=="語彙"){val completedLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().count{lessonNo->val items=levelVocab.filter{it.courseLesson==lessonNo};items.isNotEmpty() && items.all{learned.contains(it.level+"|"+it.type+"|"+it.base)}};val totalLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().size;Text("Minna no Nihongo • Lesson সম্পূর্ণ $completedLessons/$totalLessons",fontSize=13.sp,color=MaterialTheme.colorScheme.primary)}
-   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("語彙","文法","漢字").forEach{t->FilterChip(contentType==t,{contentType=t;selectedCourseLesson=null},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";else->"Kanji"})})}}
+   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){(if(level=="N5" && n5MinnaMode) listOf("語彙","文法","動画") else listOf("語彙","文法","漢字")).forEach{t->FilterChip(contentType==t,{contentType=t;if(t!="動画")selectedCourseLesson=null},{Text(when(t){"語彙"->"Vocabulary";"文法"->"Grammar";"動画"->"🎬 Video";else->"Kanji"})})}}\n   if(level=="N5" && n5MinnaMode && contentType=="動画"){Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(20.dp)){Column(Modifier.padding(18.dp)){Text("🎬 Lesson 1 • Vocabulary",fontSize=21.sp,fontWeight=FontWeight.Bold);Text("Shikkari Nihongo Gakkou",color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.SemiBold);Spacer(Modifier.height(8.dp));Text("JLPT N5 | Lesson 1 Vocabulary | Minna No Nihongo");Text("বাংলা মাধ্যমে ভিডিও লেসন",fontSize=13.sp);Spacer(Modifier.height(12.dp));Button(onClick={context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(minnaVideoUrl)))},Modifier.fillMaxWidth()){Text("▶ YouTube-এ দেখুন")}}};Spacer(Modifier.height(8.dp))}
    if(level=="N4" && contentType=="語彙"){
     val minnaLessons=levelVocab.mapNotNull{it.courseLesson}.distinct().sorted()
     LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp),contentPadding=PaddingValues(vertical=4.dp)){
